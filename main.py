@@ -116,12 +116,34 @@ L2 = 10
 L1 = 10
 
 M = np.array([[1, 0, 0, 0],
-              [0, 1, 0, 0],
+              [0, 1, 0, L2],
               [0, 0, 1, L1],
               [0, 0, 0, 1]])
-Blist = np.array([[0, 0, 1, 0, 0, 0],
-                  [1, 0, 0, 0, L1, 0],
+Slist = np.array([[0, 0, 1, 0, 0, 0],
+                  [1, 0, 0, 0, 1, 0],
                   [0, 0, 0, 0, 1, 0]]).T
-thetalist = np.array([-np.pi/2, 0, 3])
+thetalist = np.array([-np.pi/2, 0, 10])
 
-print(FKinBody(M, Blist, thetalist))
+# print(FKinBody(M, Blist, thetalist))
+
+def FKinSpace(M, Slist, thetalist):
+    T = np.array(M)
+    for i in range(len(thetalist) - 1, -1, -1):
+        T = np.dot(MatrixExp6(VecTose3(np.array(Slist)[:, i] \
+                                       * thetalist[i])), T)
+    return T
+
+# T = np.linalg.multi_dot([Rz(-np.pi/2),
+#                              Tz(10),
+#                              Rx(0),
+#                              Ty(10),
+#                              Ty(10)])
+
+print(FKinSpace(M, Slist, thetalist))
+#print(T)
+
+def Adjoint(T):
+    R = T[0: 3, 0: 3]
+    p = T[0: 3, 3]
+    return np.r_[np.c_[R, np.zeros((3, 3))],
+                 np.c_[np.dot(VecToso3(p), R), R]]
