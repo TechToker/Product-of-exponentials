@@ -1,6 +1,7 @@
 import numpy as np
 from numpy.linalg import norm
 from MatrixHelper import *
+import Visualisation as visual
 
 I = np.eye(3)
 
@@ -121,23 +122,31 @@ def Get_s_mul_theta(w, v, theta):
     return s_multiply_theta
 
 
-def FKinSpace(M, omega_arr, v_arr, thetas):
+def FKinSpace(M, omega_arr, v_arr, thetas, lastJointID):
     T = np.array(M)
 
-    # Reverse loop
-    for i in range(len(thetas) - 1, -1, -1):
+    for i in range(len(thetas) - 1 - lastJointID, -1, -1):
         se3 = Get_s_mul_theta(omega_arr[i], v_arr[i], thetas[i])
 
         # exp ^ (S * theta)
         exp6 = MatrixExp6(se3)
+
+        #print(f"arr: {exp6} \n  pos:{exp6[0:3, -1]}\n")
 
         T = np.dot(exp6, T)
 
     return T
 
 
-anw = FKinSpace(M, omega_list, v_list, q)
+anw = FKinSpace(M, omega_list, v_list, q, 0)
 print(f"New FK: \n{anw}\n")
+
+# print(f"Pos0 {FKinSpace(M, omega_list, v_list, q, 3)[0:3, -1]}")
+# print(f"Pos1 {FKinSpace(M, omega_list, v_list, q, 2)[0:3, -1]}")
+# print(f"Pos2 {FKinSpace(M, omega_list, v_list, q, 1)[0:3, -1]}")
+# print(f"Pos3 {FKinSpace(M, omega_list, v_list, q, 0)[0:3, -1]}")
+
+
 
 T = np.linalg.multi_dot([Rz(q[0]),
                          Tz(links_length[0]),
@@ -146,6 +155,7 @@ T = np.linalg.multi_dot([Rz(q[0]),
                          Ty(q[2])])
 
 print(f"Classical FK: \n{T}\n")
+
 
 ### Jacobian ###
 
@@ -171,3 +181,5 @@ def JacobianSpace(s_list, thetas):
 
 print(f"Jacobian spatial: \n{JacobianSpace(S_list, q)}\n")
 
+print()
+visual.Visualisation(q, links_length)

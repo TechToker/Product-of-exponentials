@@ -11,15 +11,19 @@ def Visualisation(q, links):
     ax = plt.axes(projection='3d')
     pos0 = [0, 0, 0]
 
+    #print(f"Pos0: {pos0}")
+
     T = np.linalg.multi_dot([Rz(q[0]),
                              Tz(links[0])])
     pos1 = T[0:3, 3]
+    #print(f"Pos1: {pos1}")
 
     T = np.linalg.multi_dot([Rz(q[0]),
                              Tz(links[0]),
                              Rx(q[1]),
                              Ty(links[1])])
     pos2 = T[0:3, 3]
+    #print(f"Pos2: {pos2}")
 
     T = np.linalg.multi_dot([Rz(q[0]),
                              Tz(links[0]),
@@ -27,6 +31,7 @@ def Visualisation(q, links):
                              Ty(links[1]),
                              Ty(q[2])])
     pos3 = T[0:3, 3]
+    #print(f"Pos3: {pos3}")
 
     x = [pos0[0], pos1[0], pos2[0], pos3[0]]
     y = [pos0[1], pos1[1], pos2[1], pos3[1]]
@@ -46,4 +51,4 @@ def Visualisation(q, links):
     plt.show()
 
 
-Visualisation(q, link_length)
+#Visualisation(q, link_length)
